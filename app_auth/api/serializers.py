@@ -4,6 +4,21 @@ from django.contrib.auth.models import User
 # 2. Third-party
 from rest_framework import serializers
 
+
+class UserInfoSerializer(serializers.ModelSerializer):
+    """
+    Serializer for user information.
+
+    Attributes:
+        id (IntegerField): The user's ID.
+        username (CharField): The user's username.
+        email (EmailField): The user's email address.
+    """
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email']
+
+
 class RegistrationSerializer(serializers.ModelSerializer):
     """
     Serializer for user registration.
@@ -12,7 +27,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
         repeat_password (CharField): Field for confirming password.
         type (ChoiceField): Field to select user type (customer or business).
     """
-    repeat_password = serializers.CharField(write_only=True)
+    repeated_password = serializers.CharField(write_only=True)
     type = serializers.ChoiceField(choices=[('customer', 'Customer'), ('business', 'Business')], write_only=True)
 
     class Meta:
