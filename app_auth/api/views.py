@@ -69,10 +69,10 @@ class UserDetailView(generics.RetrieveUpdateAPIView):
 class BusinessUserListView(generics.ListAPIView):
     queryset = UserProfile.objects.filter(type='business')
     serializer_class = UserBusinessListSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
 
 class CustomerUserListView(generics.ListAPIView):
     queryset = UserProfile.objects.filter(type='customer')
     serializer_class = UserCustomerListSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
