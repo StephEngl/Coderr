@@ -9,16 +9,16 @@ from app_auth.models import UserProfile
 
 class UserInfoSerializer(serializers.ModelSerializer):
     """
-    Serializer for user information.
+    Serializer for basic user information.
 
-    Attributes:
-        id (IntegerField): The user's ID.
+    Fields:
+        first_name (CharField): The user's first name.
+        last_name (CharField): The user's last name.
         username (CharField): The user's username.
-        email (EmailField): The user's email address.
     """
     class Meta:
         model = User
-        fields = ['username', 'email']
+        fields = ['id', 'first_name', 'last_name', 'username']
 
 
 class RegistrationSerializer(serializers.ModelSerializer):
