@@ -1,9 +1,10 @@
-from rest_framework import viewsets, permissions, generics
+from rest_framework import viewsets, permissions, generics, request
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.pagination import PageNumberPagination
 
 from app_offers.api.serializers import OffersSerializer, OfferDetailSerializer
 from app_offers.models import Offer
+from .permissions import IsBusinessUser, IsOwnerOfOffer
 
 class OfferViewSet(viewsets.ModelViewSet):
     """
@@ -22,6 +23,24 @@ class OfferViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
     pagination_class = PageNumberPagination
 
+    def get_permissions(self):
+        """
+        Assign permissions based on action.
+        """
+        permissions_list = super().get_permissions()
+        if self.action == 'create':
+            permissions_list.append(IsBusinessUser())
+        if self.action in ['update', 'partial_update', 'destroy']:
+            permissions_list.append(IsOwnerOfOffer())
+
+        return permissions_list
+    
+    def perform_create(self, serializer):
+        """
+        Saves a task with the current user as creator.
+        """
+        serializer.save(created_by=self.request.user)
+
 
 class OfferDetailView(generics.RetrieveAPIView):
     """
@@ -32,4 +51,4 @@ class OfferDetailView(generics.RetrieveAPIView):
     """
     queryset = Offer.objects.all()
     serializer_class = OfferDetailSerializer
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
