@@ -1,10 +1,11 @@
-from rest_framework import viewsets, permissions, generics, request
+from rest_framework import viewsets, permissions, generics, request, filters
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.pagination import PageNumberPagination
 
 from app_offers.api.serializers import OffersSerializer, OfferDetailSerializer
 from app_offers.models import Offer
 from .permissions import IsBusinessUser, IsOwnerOfOffer
+from .filters import OfferFilter
 
 class OfferViewSet(viewsets.ModelViewSet):
     """
@@ -21,6 +22,10 @@ class OfferViewSet(viewsets.ModelViewSet):
     queryset = Offer.objects.all()
     serializer_class = OffersSerializer
     permission_classes = [AllowAny]
+    filter_backends = [filters.OrderingFilter, filters.SearchFilter]
+    filterset_class = OfferFilter
+    ordering_fields = ['updated_at', 'min_price']
+    search_fields = ['title', 'description']
     pagination_class = PageNumberPagination
 
     def get_permissions(self):
