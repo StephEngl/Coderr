@@ -1,4 +1,5 @@
 from rest_framework import permissions
+from app_auth.models import UserProfile
 
 
 class IsBusinessUser(permissions.BasePermission):
@@ -7,7 +8,14 @@ class IsBusinessUser(permissions.BasePermission):
     """
 
     def has_permission(self, request, view):
-        return request.user and request.user.is_authenticated and getattr(request.user, 'type', None) == 'business'
+        # return request.user and request.user.is_authenticated and getattr(request.user, 'type', None) == 'business'
+        if not request.user.is_authenticated:
+            return False
+        # Richtige Abfrage des Profils!
+        try:
+            return request.user.userprofile.type == 'business'
+        except UserProfile.DoesNotExist:
+            return False
 
 
 class IsOwnerOfOffer(permissions.BasePermission):
