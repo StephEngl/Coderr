@@ -1,4 +1,4 @@
-from django_filters.rest_framework import DjangoFilterBackend, FilterSet, filters
+from django_filters.rest_framework import FilterSet, filters
 from app_offers.models import Offer
 
 class OfferFilter(FilterSet):
