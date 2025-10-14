@@ -1,7 +1,7 @@
-from django_filters.rest_framework import FilterSet, filters
+from django_filters import rest_framework as filters
 from app_offers.models import Offer
 
-class OfferFilter(FilterSet):
+class OfferFilter(filters.FilterSet):
     """
     FilterSet for filtering offers based on minimum price and delivery time.
     """
