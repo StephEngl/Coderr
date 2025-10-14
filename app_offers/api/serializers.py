@@ -4,7 +4,7 @@ from rest_framework import serializers
 from app_offers.models import Offer, OfferDetail
 
 # Für GET/Detail-Views (alle Felder inkl. id)
-class OfferDetailSerializer(serializers.ModelSerializer):
+class OfferDetailDetailsSerializer(serializers.ModelSerializer):
     features = serializers.ListField(child=serializers.CharField(), allow_empty=True)
 
     class Meta:
@@ -21,8 +21,8 @@ class OfferDetailURLSerializer(serializers.ModelSerializer):
 
 
 # Für POST/PUT (alle Felder, inkl. features als Array)
-class OfferDetailWriteSerializer(OfferDetailSerializer):
-    class Meta(OfferDetailSerializer.Meta):
+class OfferDetailWriteSerializer(OfferDetailDetailsSerializer):
+    class Meta(OfferDetailDetailsSerializer.Meta):
         fields = ['title', 'revisions', 'delivery_time_in_days', 'price', 'features', 'offer_type']
 
 
@@ -52,23 +52,16 @@ class OffersSerializer(serializers.ModelSerializer):
         }
     
     def get_min_price(self, obj: Offer):
-        details = obj.details.all()
-        if details.exists():
-            return min(detail.price for detail in details)
-        return obj.min_price
-    
+        return getattr(obj, 'min_price', None)
     def get_min_delivery_time(self, obj: Offer):
-        details = obj.details.all()
-        if details.exists():
-            return min(detail.delivery_time_in_days for detail in details)
-        return obj.min_delivery_time
+        return getattr(obj, 'min_delivery_time', None)
     
 
 class OfferCreateUpdateSerializer(serializers.ModelSerializer):
     """
     Serializer for creating and updating offers with nested details.
     """
-    details = OfferDetailSerializer(many=True)
+    details = OfferDetailDetailsSerializer(many=True)
 
     class Meta:
         model = Offer
@@ -94,3 +87,14 @@ class OfferCreateUpdateSerializer(serializers.ModelSerializer):
             for detail_data in details_data:
                 OfferDetail.objects.create(offer=instance, **detail_data)
         return instance
+    
+
+class OfferDetailSerializer(OffersSerializer):
+    """
+    Serializer for OfferDetail model.
+    """
+    class Meta(OffersSerializer.Meta):
+        fields = [
+            'id', 'user', 'title', 'image', 'description', 'created_at', 'updated_at',
+            'details', 'min_price', 'min_delivery_time'
+        ]

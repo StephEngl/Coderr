@@ -1,8 +1,12 @@
+from django.db.models import Q, Min
+from django_filters.rest_framework import DjangoFilterBackend
+
 from rest_framework import viewsets, permissions, generics, request, filters
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.pagination import PageNumberPagination
 
-from app_offers.api.serializers import OffersSerializer, OfferDetailSerializer, OfferCreateUpdateSerializer, OfferDetailWriteSerializer, OfferDetailURLSerializer
+from app_offers import models
+from app_offers.api.serializers import OffersSerializer, OfferDetailDetailsSerializer, OfferCreateUpdateSerializer, OfferDetailWriteSerializer, OfferDetailURLSerializer, OfferDetailSerializer
 from app_offers.models import Offer, OfferDetail
 from .permissions import IsBusinessUser, IsOwnerOfOffer
 from .filters import OfferFilter
@@ -19,12 +23,15 @@ class OfferViewSet(viewsets.ModelViewSet):
         partial_update: Partially update an existing offer.
         destroy: Delete an existing offer.
     """
-    queryset = Offer.objects.all()
+    queryset = Offer.objects.annotate(
+        min_price=Min('details__price'),
+        min_delivery_time=Min('details__delivery_time_in_days')
+    )
     permission_classes = [AllowAny]
     # http_method_names = ['get', 'post', 'patch', 'delete']
-    filter_backends = [filters.OrderingFilter, filters.SearchFilter]
+    filter_backends = [DjangoFilterBackend, filters.OrderingFilter, filters.SearchFilter]
     filterset_class = OfferFilter
-    filterset_fields = ['user__id']
+    # filterset_fields = ['user__id']
     search_fields = ['title', 'description']
     ordering_fields = ['updated_at', 'min_price']
     ordering = ['min_price']
@@ -35,6 +42,8 @@ class OfferViewSet(viewsets.ModelViewSet):
         Assign permissions based on action.
         """
         permissions_list = super().get_permissions()
+        if self.action == 'retrieve':
+            return [IsAuthenticated()]
         if self.action == 'create':
             permissions_list.append(IsBusinessUser())
         if self.action in ['update', 'partial_update', 'destroy']:
@@ -63,5 +72,5 @@ class OfferDetailView(generics.RetrieveAPIView):
         get: Retrieve offer details by ID.
     """
     queryset = OfferDetail.objects.all()
-    serializer_class = OfferDetailSerializer
+    serializer_class = OfferDetailDetailsSerializer
     permission_classes = [IsAuthenticated]
