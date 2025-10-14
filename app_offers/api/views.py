@@ -2,8 +2,8 @@ from rest_framework import viewsets, permissions, generics, request, filters
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.pagination import PageNumberPagination
 
-from app_offers.api.serializers import OffersSerializer, OfferDetailSerializer
-from app_offers.models import Offer
+from app_offers.api.serializers import OffersSerializer, OfferDetailSerializer, OfferCreateUpdateSerializer, OfferDetailWriteSerializer, OfferDetailURLSerializer
+from app_offers.models import Offer, OfferDetail
 from .permissions import IsBusinessUser, IsOwnerOfOffer
 from .filters import OfferFilter
 
@@ -20,12 +20,14 @@ class OfferViewSet(viewsets.ModelViewSet):
         destroy: Delete an existing offer.
     """
     queryset = Offer.objects.all()
-    serializer_class = OffersSerializer
     permission_classes = [AllowAny]
+    # http_method_names = ['get', 'post', 'patch', 'delete']
     filter_backends = [filters.OrderingFilter, filters.SearchFilter]
     filterset_class = OfferFilter
-    ordering_fields = ['updated_at', 'min_price']
+    filterset_fields = ['user__id']
     search_fields = ['title', 'description']
+    ordering_fields = ['updated_at', 'min_price']
+    ordering = ['min_price']
     pagination_class = PageNumberPagination
 
     def get_permissions(self):
@@ -37,14 +39,20 @@ class OfferViewSet(viewsets.ModelViewSet):
             permissions_list.append(IsBusinessUser())
         if self.action in ['update', 'partial_update', 'destroy']:
             permissions_list.append(IsOwnerOfOffer())
-
         return permissions_list
+    
+    def get_serializer_class(self):
+        if self.action == 'retrieve':
+            return OfferDetailSerializer
+        if self.action in ['create', 'partial_update']:
+            return OfferCreateUpdateSerializer
+        return OffersSerializer
     
     def perform_create(self, serializer):
         """
         Saves a task with the current user as creator.
         """
-        serializer.save(created_by=self.request.user)
+        serializer.save(user=self.request.user)
 
 
 class OfferDetailView(generics.RetrieveAPIView):
@@ -54,6 +62,6 @@ class OfferDetailView(generics.RetrieveAPIView):
     Methods:
         get: Retrieve offer details by ID.
     """
-    queryset = Offer.objects.all()
+    queryset = OfferDetail.objects.all()
     serializer_class = OfferDetailSerializer
     permission_classes = [IsAuthenticated]
