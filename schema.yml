@@ -1,0 +1,895 @@
+openapi: 3.0.3
+info:
+  title: Coderr API
+  version: 1.0.0
+  description: Backend for a developers freelancer platform
+paths:
+  /api/login/:
+    post:
+      operationId: api_login_create
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/offerdetails/{id}/:
+    get:
+      operationId: api_offerdetails_retrieve
+      description: |-
+        API view to retrieve details of a specific offer.
+
+        Methods:
+            get: Retrieve offer details by ID.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OfferDetailDetails'
+          description: ''
+  /api/offers/:
+    get:
+      operationId: api_offers_list
+      description: |-
+        ViewSet for managing offers.
+
+        Actions:
+            list: List all offers.
+            create: Create a new offer.
+            retrieve: Retrieve a specific offer by ID.
+            update: Update an existing offer.
+            partial_update: Partially update an existing offer.
+            destroy: Delete an existing offer.
+      parameters:
+      - in: query
+        name: creator_id
+        schema:
+          type: integer
+      - in: query
+        name: min_delivery_time
+        schema:
+          type: number
+      - in: query
+        name: min_price
+        schema:
+          type: number
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedOffersList'
+          description: ''
+    post:
+      operationId: api_offers_create
+      description: |-
+        ViewSet for managing offers.
+
+        Actions:
+            list: List all offers.
+            create: Create a new offer.
+            retrieve: Retrieve a specific offer by ID.
+            update: Update an existing offer.
+            partial_update: Partially update an existing offer.
+            destroy: Delete an existing offer.
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OfferCreateUpdate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OfferCreateUpdate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/OfferCreateUpdate'
+        required: true
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OfferCreateUpdate'
+          description: ''
+  /api/offers/{id}/:
+    get:
+      operationId: api_offers_retrieve
+      description: |-
+        ViewSet for managing offers.
+
+        Actions:
+            list: List all offers.
+            create: Create a new offer.
+            retrieve: Retrieve a specific offer by ID.
+            update: Update an existing offer.
+            partial_update: Partially update an existing offer.
+            destroy: Delete an existing offer.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this offer.
+        required: true
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OfferDetail'
+          description: ''
+    put:
+      operationId: api_offers_update
+      description: |-
+        ViewSet for managing offers.
+
+        Actions:
+            list: List all offers.
+            create: Create a new offer.
+            retrieve: Retrieve a specific offer by ID.
+            update: Update an existing offer.
+            partial_update: Partially update an existing offer.
+            destroy: Delete an existing offer.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this offer.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Offers'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Offers'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Offers'
+        required: true
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Offers'
+          description: ''
+    patch:
+      operationId: api_offers_partial_update
+      description: |-
+        ViewSet for managing offers.
+
+        Actions:
+            list: List all offers.
+            create: Create a new offer.
+            retrieve: Retrieve a specific offer by ID.
+            update: Update an existing offer.
+            partial_update: Partially update an existing offer.
+            destroy: Delete an existing offer.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this offer.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedOfferCreateUpdate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedOfferCreateUpdate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedOfferCreateUpdate'
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OfferCreateUpdate'
+          description: ''
+    delete:
+      operationId: api_offers_destroy
+      description: |-
+        ViewSet for managing offers.
+
+        Actions:
+            list: List all offers.
+            create: Create a new offer.
+            retrieve: Retrieve a specific offer by ID.
+            update: Update an existing offer.
+            partial_update: Partially update an existing offer.
+            destroy: Delete an existing offer.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this offer.
+        required: true
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/profile/{user_id}/:
+    get:
+      operationId: api_profile_retrieve
+      parameters:
+      - in: path
+        name: user_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetail'
+          description: ''
+    put:
+      operationId: api_profile_update
+      parameters:
+      - in: path
+        name: user_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserDetail'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserDetail'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserDetail'
+        required: true
+      security:
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetail'
+          description: ''
+    patch:
+      operationId: api_profile_partial_update
+      parameters:
+      - in: path
+        name: user_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUserDetail'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUserDetail'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUserDetail'
+      security:
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetail'
+          description: ''
+  /api/profile/business/:
+    get:
+      operationId: api_profile_business_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedUserBusinessListList'
+          description: ''
+  /api/profile/customer/:
+    get:
+      operationId: api_profile_customer_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedUserCustomerListList'
+          description: ''
+  /api/registration/:
+    post:
+      operationId: api_registration_create
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+components:
+  schemas:
+    BlankEnum:
+      enum:
+      - ''
+    NullEnum:
+      enum:
+      - null
+    OfferCreateUpdate:
+      type: object
+      description: Serializer for creating and updating offers with nested details.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 200
+        image:
+          type: string
+          format: uri
+          nullable: true
+        description:
+          type: string
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/OfferDetailDetails'
+      required:
+      - description
+      - details
+      - id
+      - title
+    OfferDetail:
+      type: object
+      description: Serializer for OfferDetail model.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        user:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 200
+        image:
+          type: string
+          format: uri
+          nullable: true
+        description:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/OfferDetailURL'
+          readOnly: true
+        min_price:
+          type: string
+          readOnly: true
+        min_delivery_time:
+          type: string
+          readOnly: true
+          description: Delivery time in days
+      required:
+      - created_at
+      - description
+      - details
+      - id
+      - min_delivery_time
+      - min_price
+      - title
+      - updated_at
+      - user
+    OfferDetailDetails:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 255
+        revisions:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        delivery_time_in_days:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        features:
+          type: array
+          items:
+            type: string
+        offer_type:
+          $ref: '#/components/schemas/OfferTypeEnum'
+      required:
+      - features
+      - id
+      - offer_type
+      - price
+      - title
+    OfferDetailURL:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        url:
+          type: string
+          format: uri
+          readOnly: true
+      required:
+      - id
+      - url
+    OfferTypeEnum:
+      enum:
+      - basic
+      - standard
+      - premium
+      type: string
+      description: |-
+        * `basic` - Basic
+        * `standard` - Standard
+        * `premium` - Premium
+    Offers:
+      type: object
+      description: Serializer for user offers with nested details and user info.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        user:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 200
+        image:
+          type: string
+          format: uri
+          nullable: true
+        description:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/OfferDetailURL'
+          readOnly: true
+        min_price:
+          type: string
+          readOnly: true
+        min_delivery_time:
+          type: string
+          readOnly: true
+          description: Delivery time in days
+        user_details:
+          type: string
+          readOnly: true
+      required:
+      - created_at
+      - description
+      - details
+      - id
+      - min_delivery_time
+      - min_price
+      - title
+      - updated_at
+      - user
+      - user_details
+    PaginatedOffersList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Offers'
+    PaginatedUserBusinessListList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserBusinessList'
+    PaginatedUserCustomerListList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserCustomerList'
+    PatchedOfferCreateUpdate:
+      type: object
+      description: Serializer for creating and updating offers with nested details.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 200
+        image:
+          type: string
+          format: uri
+          nullable: true
+        description:
+          type: string
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/OfferDetailDetails'
+    PatchedUserDetail:
+      type: object
+      description: Serializer for detailed user information.
+      properties:
+        user:
+          type: string
+          readOnly: true
+        username:
+          type: string
+          readOnly: true
+        first_name:
+          type: string
+        last_name:
+          type: string
+        file:
+          type: string
+          format: uri
+          nullable: true
+        location:
+          type: string
+          nullable: true
+          maxLength: 100
+        tel:
+          type: string
+          nullable: true
+          maxLength: 20
+        description:
+          type: string
+          nullable: true
+        working_hours:
+          type: string
+          nullable: true
+          maxLength: 100
+        type:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/TypeEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        email:
+          type: string
+          format: email
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+    TypeEnum:
+      enum:
+      - customer
+      - business
+      type: string
+      description: |-
+        * `customer` - Customer
+        * `business` - Business
+    UserBusinessList:
+      type: object
+      description: Serializer for listing business users.
+      properties:
+        user:
+          type: string
+          readOnly: true
+        username:
+          type: string
+          readOnly: true
+        first_name:
+          type: string
+        last_name:
+          type: string
+        file:
+          type: string
+          format: uri
+          readOnly: true
+          nullable: true
+        location:
+          type: string
+          readOnly: true
+          nullable: true
+        tel:
+          type: string
+          readOnly: true
+          nullable: true
+        description:
+          type: string
+          readOnly: true
+          nullable: true
+        working_hours:
+          type: string
+          readOnly: true
+          nullable: true
+        type:
+          readOnly: true
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/TypeEnum'
+          - $ref: '#/components/schemas/NullEnum'
+      required:
+      - description
+      - file
+      - first_name
+      - last_name
+      - location
+      - tel
+      - type
+      - user
+      - username
+      - working_hours
+    UserCustomerList:
+      type: object
+      description: Serializer for listing customer users.
+      properties:
+        user:
+          type: string
+          readOnly: true
+        username:
+          type: string
+          readOnly: true
+        first_name:
+          type: string
+        last_name:
+          type: string
+        file:
+          type: string
+          format: uri
+          readOnly: true
+          nullable: true
+        uploaded_at:
+          type: string
+          format: date-time
+          readOnly: true
+        type:
+          readOnly: true
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/TypeEnum'
+          - $ref: '#/components/schemas/NullEnum'
+      required:
+      - file
+      - first_name
+      - last_name
+      - type
+      - uploaded_at
+      - user
+      - username
+    UserDetail:
+      type: object
+      description: Serializer for detailed user information.
+      properties:
+        user:
+          type: string
+          readOnly: true
+        username:
+          type: string
+          readOnly: true
+        first_name:
+          type: string
+        last_name:
+          type: string
+        file:
+          type: string
+          format: uri
+          nullable: true
+        location:
+          type: string
+          nullable: true
+          maxLength: 100
+        tel:
+          type: string
+          nullable: true
+          maxLength: 20
+        description:
+          type: string
+          nullable: true
+        working_hours:
+          type: string
+          nullable: true
+          maxLength: 100
+        type:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/TypeEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        email:
+          type: string
+          format: email
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - email
+      - first_name
+      - last_name
+      - user
+      - username
+  securitySchemes:
+    tokenAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: Token-based authentication with required prefix "Token"
