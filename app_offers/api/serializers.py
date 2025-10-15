@@ -1,3 +1,4 @@
+from urllib import request
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
@@ -68,6 +69,12 @@ class OfferCreateUpdateSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'image', 'description', 'details']
         read_only_fields = ['id']
 
+    def validate_details(self, value):
+        if self.context['request'].method == 'POST':
+            if len(value) < 3:
+                raise serializers.ValidationError("At least three offer details are required.")
+        return value
+
     def create(self, validated_data):
         details_data = validated_data.pop('details', [])
         validated_data.pop('user', None)
@@ -82,10 +89,20 @@ class OfferCreateUpdateSerializer(serializers.ModelSerializer):
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
         instance.save()
+
         if details_data is not None:
-            instance.details.all().delete()
             for detail_data in details_data:
-                OfferDetail.objects.create(offer=instance, **detail_data)
+                offer_type = detail_data.get('offer_type')
+                if not offer_type:
+                    continue
+                try:
+                    detail_instance = instance.details.get(offer_type=offer_type)
+                except OfferDetail.DoesNotExist:
+                    raise serializers.ValidationError(f"OfferDetail with offer_type '{offer_type}' does not exist.")
+                for field, value in detail_data.items():
+                    if field != 'offer_type':
+                        setattr(detail_instance, field, value)
+                detail_instance.save()
         return instance
     
 
