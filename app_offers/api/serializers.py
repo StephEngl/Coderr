@@ -1,11 +1,11 @@
-from urllib import request
-from django.contrib.auth.models import User
 from rest_framework import serializers
 
 from app_offers.models import Offer, OfferDetail
 
-# Für GET/Detail-Views (alle Felder inkl. id)
 class OfferDetailDetailsSerializer(serializers.ModelSerializer):
+    """
+    Serializer for OfferDetail model with all fields for reading and writing.
+    """
     features = serializers.ListField(child=serializers.CharField(), allow_empty=True)
 
     class Meta:
@@ -13,23 +13,30 @@ class OfferDetailDetailsSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'revisions', 'delivery_time_in_days', 'price', 'features', 'offer_type']
 
 
-# Für GET/Listen-Views (id, url)
+class OfferDetailWriteSerializer(OfferDetailDetailsSerializer):
+    """
+    Serializer for writing OfferDetail objects (used for POST/PATCH).
+    Excludes 'id' field.
+    """
+    class Meta(OfferDetailDetailsSerializer.Meta):
+        fields = ['title', 'revisions', 'delivery_time_in_days', 'price', 'features', 'offer_type']
+
+
 class OfferDetailURLSerializer(serializers.ModelSerializer):
+    """
+    Serializer for OfferDetail model that returns only 'id' and 'url'.
+    Used for nested representation in Offer list views.
+    """
     class Meta:
         model = OfferDetail
         extra_kwargs = {'url': {'view_name': 'offer-detail', 'lookup_field': 'pk'}}
         fields = ['id', 'url']
 
 
-# Für POST/PUT (alle Felder, inkl. features als Array)
-class OfferDetailWriteSerializer(OfferDetailDetailsSerializer):
-    class Meta(OfferDetailDetailsSerializer.Meta):
-        fields = ['title', 'revisions', 'delivery_time_in_days', 'price', 'features', 'offer_type']
-
-
 class OffersSerializer(serializers.ModelSerializer):
     """
-    Serializer for user offers with nested details and user info.
+    Serializer for Offer model in list and retrieve views.
+    Includes nested details as URLs, user info, and calculated fields.
     """
     details = OfferDetailURLSerializer(many=True, read_only=True)
     user_details = serializers.SerializerMethodField()
@@ -42,25 +49,51 @@ class OffersSerializer(serializers.ModelSerializer):
             'id', 'user', 'title', 'image', 'description', 'created_at', 'updated_at',
             'details', 'min_price', 'min_delivery_time', 'user_details'
         ]
-        read_only_fields = ['id', 'created_at', 'updated_at', 'user']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'user', 'min_price', 'min_delivery_time', 'user_details']
+
 
     def get_user_details(self, obj: Offer):
+        """
+        Returns basic user info for the offer owner.
+        """
         user = obj.user
         return {
             'first_name': user.first_name,
             'last_name': user.last_name,
             'username': user.username
         }
-    
+
+
     def get_min_price(self, obj: Offer):
+        """
+        Returns the minimum price for the offer, if annotated.
+        """
         return getattr(obj, 'min_price', None)
+
+
     def get_min_delivery_time(self, obj: Offer):
+        """
+        Returns the minimum delivery time for the offer, if annotated.
+        """
         return getattr(obj, 'min_delivery_time', None)
-    
+
+
+class OfferDetailSerializer(OffersSerializer):
+    """
+    Serializer for Offer model in retrieve view, excluding user_details.
+    """
+    class Meta:
+        model = Offer
+        fields = [
+            'id', 'user', 'title', 'image', 'description', 'created_at', 'updated_at',
+            'details', 'min_price', 'min_delivery_time'
+        ]
+
 
 class OfferCreateUpdateSerializer(serializers.ModelSerializer):
     """
-    Serializer for creating and updating offers with nested details.
+    Serializer for creating and updating Offer objects with nested details.
+    Used for POST and PATCH requests.
     """
     details = OfferDetailDetailsSerializer(many=True)
 
@@ -70,12 +103,18 @@ class OfferCreateUpdateSerializer(serializers.ModelSerializer):
         read_only_fields = ['id']
 
     def validate_details(self, value):
+        """
+        Validates that at least three offer details are provided on POST.
+        """
         if self.context['request'].method == 'POST':
             if len(value) < 3:
                 raise serializers.ValidationError("At least three offer details are required.")
         return value
 
     def create(self, validated_data):
+        """
+        Creates an Offer and its related OfferDetail objects.
+        """
         details_data = validated_data.pop('details', [])
         validated_data.pop('user', None)
         user = self.context['request'].user
@@ -85,6 +124,10 @@ class OfferCreateUpdateSerializer(serializers.ModelSerializer):
         return offer
 
     def update(self, instance, validated_data):
+        """
+        Updates Offer fields and nested OfferDetail objects by offer_type.
+        Only the details provided in the request are updated.
+        """
         details_data = validated_data.pop('details', None)
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
@@ -104,14 +147,6 @@ class OfferCreateUpdateSerializer(serializers.ModelSerializer):
                         setattr(detail_instance, field, value)
                 detail_instance.save()
         return instance
-    
 
-class OfferDetailSerializer(OffersSerializer):
-    """
-    Serializer for OfferDetail model.
-    """
-    class Meta(OffersSerializer.Meta):
-        fields = [
-            'id', 'user', 'title', 'image', 'description', 'created_at', 'updated_at',
-            'details', 'min_price', 'min_delivery_time'
-        ]
+
+
