@@ -12,9 +12,10 @@ from app_offers.api.serializers import OffersSerializer, OfferDetailDetailsSeria
 from app_offers.models import Offer, OfferDetail
 from .permissions import IsBusinessUser, IsOwnerOfOffer
 from .filters import OfferFilter
+from .pagination import StandardResultsSetPagination
 
 
-@extend_schema(tags=['Orders'])
+@extend_schema(tags=['Offers'])
 class OfferViewSet(viewsets.ModelViewSet):
     """
     ViewSet for managing offers.
@@ -38,7 +39,7 @@ class OfferViewSet(viewsets.ModelViewSet):
     search_fields = ['title', 'description']
     ordering_fields = ['updated_at', 'min_price']
     ordering = ['min_price']
-    pagination_class = PageNumberPagination
+    pagination_class = StandardResultsSetPagination
 
 
     def get_queryset(self):
@@ -46,6 +47,7 @@ class OfferViewSet(viewsets.ModelViewSet):
                 min_price=Min('details__price'),
                 min_delivery_time=Min('details__delivery_time_in_days')
             )
+
 
     def get_permissions(self):
         """
@@ -85,7 +87,7 @@ class OfferViewSet(viewsets.ModelViewSet):
         
         return Response(serializer.data)
 
-@extend_schema(tags=['Orders'])
+@extend_schema(tags=['Offers'])
 class OfferDetailView(generics.RetrieveAPIView):
     """
     API view to retrieve details of a specific offer.
