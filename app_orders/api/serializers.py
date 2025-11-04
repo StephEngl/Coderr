@@ -79,3 +79,8 @@ class OrderCreateUpdateSerializer(serializers.ModelSerializer):
             status='in_progress',
         )
         return order
+
+
+class OrderUpdateSerializer(OrderCreateUpdateSerializer):
+    class Meta(OrderCreateUpdateSerializer.Meta):
+        read_only_fields = ['id', 'offer_detail_id', 'customer_user', 'business_user', 'title', 'revisions', 'delivery_time_in_days', 'price', 'features', 'offer_type', 'created_at', 'updated_at']
