@@ -9,10 +9,8 @@ class IsBusinessUser(permissions.BasePermission):
     message = "Only business users are allowed to perform this action."
 
     def has_permission(self, request, view):
-        # return request.user and request.user.is_authenticated and getattr(request.user, 'type', None) == 'business'
         if not request.user.is_authenticated:
             return False
-        # Richtige Abfrage des Profils!
         try:
             return request.user.userprofile.type == 'business'
         except UserProfile.DoesNotExist:
