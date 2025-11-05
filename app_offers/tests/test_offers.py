@@ -6,7 +6,7 @@ from rest_framework.authtoken.models import Token
 
 from app_offers.models import Offer
 
-from ..api.serializers import OfferDetailSerializer, OffersSerializer
+from ..api.serializers import OfferDetailDetailsSerializer, OffersSerializer
 from app_auth.models import UserProfile
 
 
