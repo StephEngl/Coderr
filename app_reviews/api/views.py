@@ -46,7 +46,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
         if self.action == 'destroy':
             permission_classes.append(IsReviewer)
         return [perm() for perm in permission_classes]
-    
+
     @extend_schema(
         responses={
             200: ReviewSerializer(many=True),
@@ -88,4 +88,19 @@ class ReviewViewSet(viewsets.ModelViewSet):
                 "You have already reviewed this business user.")
 
         serializer.save(reviewer=self.request.user)
-    
+
+    @extend_schema(
+        responses={
+            200: ReviewCreateUpdateSerializer,
+            400: OpenApiResponse(description="Bad Request"),
+            401: OpenApiResponse(description="User is unauthorized"),
+            403: OpenApiResponse(description="User is not the offer owner"),
+            404: OpenApiResponse(description="Review not Found"),
+        }
+    )
+    def partial_update(self, request, *args, **kwargs):
+        business_user = request.data.get('business_user')
+        if business_user:
+            raise ValidationError("Cannot change business_user of a review.")
+
+        return super().partial_update(request, *args, **kwargs)
