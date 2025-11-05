@@ -21,6 +21,12 @@ from app_auth.models import UserProfile
 class OrderViewSet(viewsets.ModelViewSet):
     """
     A viewset for viewing and editing order instances.
+
+    Actions:
+        list: List all orders.
+        create: Create a new order.
+        partial_update: Partially update an existing order.
+        destroy: Delete an existing order.
     """
     queryset = Order.objects.all()
     serializer_class = OrderSerializer

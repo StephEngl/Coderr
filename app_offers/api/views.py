@@ -25,7 +25,6 @@ class OfferViewSet(viewsets.ModelViewSet):
         list: List all offers.
         create: Create a new offer.
         retrieve: Retrieve a specific offer by ID.
-        update: Update an existing offer.
         partial_update: Partially update an existing offer.
         destroy: Delete an existing offer.
     """
