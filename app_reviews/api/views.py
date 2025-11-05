@@ -6,9 +6,10 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from drf_spectacular.utils import extend_schema, OpenApiResponse
 
-from .serializers import ReviewSerializer, ReviewCreateUpdateSerializer
 from ..models import Review
+from .serializers import ReviewSerializer, ReviewCreateUpdateSerializer
 from .permissions import IsReviewer
+from .filters import ReviewFilter
 from app_orders.api.permissions import IsCustomerUser
 
 
@@ -23,8 +24,9 @@ class ReviewViewSet(viewsets.ModelViewSet):
     queryset = Review.objects.all()
     http_method_names = ['get', 'post', 'patch', 'delete', 'head', 'options']
     permission_classes = [IsAuthenticated]
-    # filter_backends = [filters.OrderingFilter, DjangoFilterBackend]
-    # ordering_fields = ['updated_at', 'rating']
+    filter_backends = [filters.OrderingFilter, DjangoFilterBackend]
+    filterset_class = ReviewFilter
+    ordering_fields = ['updated_at', 'rating']
 
     def get_serializer_class(self):
         if self.action in ['create', 'partial_update']:
@@ -44,6 +46,15 @@ class ReviewViewSet(viewsets.ModelViewSet):
         if self.action == 'destroy':
             permission_classes.append(IsReviewer)
         return [perm() for perm in permission_classes]
+    
+    # @extend_schema(
+    #     responses={
+    #         200: ReviewSerializer(many=True),
+    #         401: OpenApiResponse(description="User is unauthorized"),
+    #     }
+    # )
+    # def list(self, request, *args, **kwargs):
+    #     return super().list(request, *args, **kwargs)
 
     @extend_schema(exclude=True)
     def retrieve(self, request, *args, **kwargs):
@@ -77,3 +88,4 @@ class ReviewViewSet(viewsets.ModelViewSet):
                 "You have already reviewed this business user.")
 
         serializer.save(reviewer=self.request.user)
+    
