@@ -47,14 +47,14 @@ class ReviewViewSet(viewsets.ModelViewSet):
             permission_classes.append(IsReviewer)
         return [perm() for perm in permission_classes]
     
-    # @extend_schema(
-    #     responses={
-    #         200: ReviewSerializer(many=True),
-    #         401: OpenApiResponse(description="User is unauthorized"),
-    #     }
-    # )
-    # def list(self, request, *args, **kwargs):
-    #     return super().list(request, *args, **kwargs)
+    @extend_schema(
+        responses={
+            200: ReviewSerializer(many=True),
+            401: OpenApiResponse(description="User is unauthorized"),
+        }
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
 
     @extend_schema(exclude=True)
     def retrieve(self, request, *args, **kwargs):
