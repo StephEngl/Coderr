@@ -1,4 +1,24 @@
+"""
+URL configuration for authentication and user profile endpoints.
+
+Defines RESTful routes for:
+- User registration and authentication.
+- Retrieving and listing user profiles, including business and customer users.
+
+Conventions:
+- Uses class-based views for each route.
+- All routes are named for reverse URL resolution.
+
+Example usage (reverse):
+    reverse('registration')
+    reverse('login')
+    reverse('user-detail', args=[1])
+    reverse('business-user-list')
+    reverse('customer-user-list')
+"""
+
 from django.urls import path
+
 from .views import RegistrationView, LoginView, UserDetailView, BusinessUserListView, CustomerUserListView
 
 urlpatterns = [
