@@ -3,7 +3,7 @@ from app_offers.models import Offer
 
 class OfferFilter(filters.FilterSet):
     """
-    FilterSet for filtering offers based on minimum price and delivery time.
+    FilterSet for filtering offers based on minimum price and maximum delivery time.
     """
     creator_id = filters.NumberFilter(field_name='user_id', lookup_expr='exact')
     min_price = filters.NumberFilter(field_name='min_price', lookup_expr='gte')

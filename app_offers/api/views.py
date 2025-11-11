@@ -39,6 +39,12 @@ class OfferViewSet(viewsets.ModelViewSet):
     parser_classes = [MultiPartParser, FormParser, JSONParser]
 
     def get_queryset(self):
+        """
+        Returns offers annotated with minimum price and minimum delivery time.
+
+        Uses aggregation to add 'min_price' and 'min_delivery_time' fields
+        based on related 'details' entries.
+        """
         return Offer.objects.annotate(
             min_price=Min('details__price'),
             min_delivery_time=Min('details__delivery_time_in_days')
@@ -59,6 +65,13 @@ class OfferViewSet(viewsets.ModelViewSet):
         return [perm() for perm in permission_classes]
 
     def get_serializer_class(self):
+        """
+        Returns the serializer class based on the action:
+
+        - 'retrieve': detailed offer serializer,
+        - 'create' and 'partial_update': create/update serializer,
+        - otherwise: simple offers list serializer.
+        """
         if self.action == 'retrieve':
             return OfferDetailSerializer
         if self.action in ['create', 'partial_update']:
@@ -111,6 +124,11 @@ class OfferViewSet(viewsets.ModelViewSet):
         }
     )
     def partial_update(self, request, *args, **kwargs):
+        """
+        Handles PATCH requests to partially update an existing offer.
+
+        Enforces ownership permission and returns updated offer data.
+        """
         kwargs['partial'] = True
         super().partial_update(request, *args, **kwargs)
         instance = self.get_object()
