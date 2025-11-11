@@ -40,8 +40,8 @@ class OffersSerializer(serializers.ModelSerializer):
     """
     details = OfferDetailURLSerializer(many=True, read_only=True)
     user_details = serializers.SerializerMethodField()
-    min_price = serializers.SerializerMethodField()
-    min_delivery_time = serializers.SerializerMethodField(help_text="Delivery time in days")
+    min_price = serializers.DecimalField(max_digits=10, decimal_places=2, coerce_to_string=False, read_only=True, help_text="Minimum price among all offer details." )
+    min_delivery_time = serializers.IntegerField(read_only=True, help_text="Minimum delivery time in days among all offer details." )
 
     class Meta:
         model = Offer
@@ -62,20 +62,6 @@ class OffersSerializer(serializers.ModelSerializer):
             'last_name': user.last_name,
             'username': user.username
         }
-
-
-    def get_min_price(self, obj: Offer):
-        """
-        Returns the minimum price for the offer, if annotated.
-        """
-        return getattr(obj, 'min_price', None)
-
-
-    def get_min_delivery_time(self, obj: Offer):
-        """
-        Returns the minimum delivery time for the offer, if annotated.
-        """
-        return getattr(obj, 'min_delivery_time', None)
 
 
 class OfferDetailSerializer(OffersSerializer):
