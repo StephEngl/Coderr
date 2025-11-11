@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 
 # 2. Third-party
 from rest_framework import status, generics
-# from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -76,7 +76,7 @@ class UserDetailView(generics.RetrieveUpdateAPIView):
     serializer_class = UserDetailSerializer
     permission_classes = [IsProfileOwner, IsAuthenticated]
     lookup_field = 'user_id'
-    # parser_classes = [MultiPartParser, FormParser]
+    parser_classes = [MultiPartParser, FormParser]
 
 
 @extend_schema(
