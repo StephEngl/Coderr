@@ -86,7 +86,7 @@ class UserDetailSerializer(serializers.ModelSerializer):
     """
     Serializer for detailed user information.
     """
-    user = serializers.CharField(source='user.id', read_only=True)
+    user = serializers.IntegerField(source='user.id', read_only=True)
     username = serializers.CharField(source='user.username', read_only=True)
     email = serializers.EmailField(source='user.email')
     first_name = serializers.CharField(source='user.first_name')
