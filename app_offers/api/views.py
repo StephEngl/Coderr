@@ -2,6 +2,7 @@ from django.db.models import Min
 
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, generics, filters
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from drf_spectacular.utils import extend_schema, OpenApiResponse
@@ -35,6 +36,7 @@ class OfferViewSet(viewsets.ModelViewSet):
     search_fields = ['title', 'description']
     ordering_fields = ['updated_at', 'min_price']
     pagination_class = StandardResultsSetPagination
+    parser_classes = [MultiPartParser, FormParser, JSONParser]
 
     def get_queryset(self):
         return Offer.objects.annotate(
@@ -47,7 +49,6 @@ class OfferViewSet(viewsets.ModelViewSet):
         Assign permissions based on action.
         Checks: authentication -> object existence -> ownership.
         """
-        # Always require authentication first
         permission_classes = [IsAuthenticated]
         if self.action == 'list':
             permission_classes = [AllowAny]
