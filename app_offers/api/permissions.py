@@ -12,7 +12,7 @@ class IsBusinessUser(permissions.BasePermission):
         if not request.user.is_authenticated:
             return False
         try:
-            return request.user.userprofile.type == 'business'
+            return request.user.profile.type == 'business'
         except UserProfile.DoesNotExist:
             return False
 

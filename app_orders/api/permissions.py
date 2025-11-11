@@ -12,7 +12,7 @@ class IsCustomerUser(permissions.BasePermission):
         if not request.user.is_authenticated:
             return False
         try:
-            return request.user.userprofile.type == 'customer'
+            return request.user.profile.type == 'customer'
         except UserProfile.DoesNotExist:
             return False
 
