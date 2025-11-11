@@ -110,8 +110,8 @@ class OrderCountView(generics.ListAPIView):
             404: OpenApiResponse(description="Found no business-user with this ID"),
         }
     )
-    def get(self, request, pk, *args, **kwargs):
-        user_profile = get_object_or_404(UserProfile, pk=pk, type='business')
+    def get(self, request, business_user_id, *args, **kwargs):
+        user_profile = get_object_or_404(UserProfile, user_id=business_user_id, type='business')
         business_user = user_profile.user
         order_count = Order.objects.filter(business_user=business_user, status='in_progress').count()
         return Response({'order_count': order_count})
@@ -133,8 +133,8 @@ class CompletedOrderCountView(generics.ListAPIView):
             404: OpenApiResponse(description="Found no business-user with this ID"),
         }
     )
-    def get(self, request, pk, *args, **kwargs):
-        user_profile = get_object_or_404(UserProfile, pk=pk, type='business')
+    def get(self, request, business_user_id, *args, **kwargs):
+        user_profile = get_object_or_404(UserProfile, user_id=business_user_id, type='business')
         business_user = user_profile.user
         completed_order_count = Order.objects.filter(business_user=business_user, status='completed').count()
         return Response({'completed_order_count': completed_order_count})
