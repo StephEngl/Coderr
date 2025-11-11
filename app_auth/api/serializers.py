@@ -144,11 +144,9 @@ class UserCustomerListSerializer(UserDetailSerializer):
     """
     Serializer for listing customer users.
     """
-    uploaded_at = serializers.DateTimeField(
-        source='file_uploaded_at', read_only=True)
 
     class Meta:
         model = UserProfile
         fields = ['user', 'username', 'first_name', 'last_name',
-                'file', 'uploaded_at', 'type']
+                'file', 'type']
         read_only_fields = fields
