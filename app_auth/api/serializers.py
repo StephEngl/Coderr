@@ -85,6 +85,11 @@ class RegistrationSerializer(serializers.ModelSerializer):
 class UserDetailSerializer(serializers.ModelSerializer):
     """
     Serializer for detailed user information.
+
+    Maps UserProfile model fields to serializer fields including
+    user-related info (id, username, email, first and last name).
+
+    Overrides update() to handle nested user fields update.
     """
     user = serializers.IntegerField(source='user.id', read_only=True)
     username = serializers.CharField(source='user.username', read_only=True)
@@ -99,6 +104,12 @@ class UserDetailSerializer(serializers.ModelSerializer):
                 'working_hours', 'type', 'email', 'created_at']
     
     def update(self, instance, validated_data):
+        """
+        Update UserProfile instance and nested User info.
+
+        Extracts user data from validated_data, updates related fields 
+        on instance.user, saves it, then updates UserProfile fields.
+        """
         user_data = validated_data.pop('user', {})
         email = user_data.get('email')
         first_name = user_data.get('first_name')
