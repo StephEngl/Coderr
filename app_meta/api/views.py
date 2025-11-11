@@ -28,18 +28,12 @@ class BaseInfoView(generics.RetrieveAPIView):
     def get(self, request, *args, **kwargs):
         """
         Handle GET requests to fetch application statistics.
-
-        Returns:
-            Response: Serialized application statistics including:
-                - review_count (int): Total number of reviews.
-                - average_count (float): Average rating across all reviews.
-                - business_profile_count (int): Total number of business user profiles.
-                - offer_count (int): Total number of offers.
         """
-        average_count = Review.objects.all().aggregate(avg_rating=Avg('rating'))['avg_rating'] or 0
+        average_rating = Review.objects.aggregate(average=Avg('rating'))['average'] or 0.0
+
         data = {
             "review_count": Review.objects.count(),
-            "average_count": average_count,
+            "average_rating": average_rating,
             "business_profile_count": UserProfile.objects.filter(type='business').count(),
             "offer_count": Offer.objects.count(),
         }
