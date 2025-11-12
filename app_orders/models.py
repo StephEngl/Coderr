@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 
 class Order(models.Model):
@@ -10,9 +11,9 @@ class Order(models.Model):
     ]
 
     title = models.CharField(max_length=255)
-    revisions = models.IntegerField(default=0)
-    delivery_time_in_days = models.IntegerField(default=0)
-    price = models.DecimalField(max_digits=10, decimal_places=2, null=True)
+    revisions = models.IntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(99999)])
+    delivery_time_in_days = models.IntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(999)])
+    price = models.IntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(9999)])
     offer_type = models.CharField(max_length=30, default='basic')
     features = models.JSONField(default=list)
 
