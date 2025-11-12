@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from drf_spectacular.utils import extend_schema_field
 
 from app_offers.models import Offer, OfferDetail
 
@@ -51,7 +52,14 @@ class OffersSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['id', 'created_at', 'updated_at', 'user', 'min_price', 'min_delivery_time', 'user_details']
 
-
+    @extend_schema_field({
+        'type': 'object',
+        'properties': {
+            'first_name': {'type': 'string', 'example': 'Jane'},
+            'last_name': {'type': 'string', 'example': 'Doe'},
+            'username': {'type': 'string', 'example': 'janedoe123'},
+        }
+    })
     def get_user_details(self, obj: Offer):
         """
         Returns basic user info for the offer owner.
