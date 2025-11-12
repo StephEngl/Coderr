@@ -35,6 +35,10 @@ class OrderViewSet(viewsets.ModelViewSet):
     def get_permissions(self):
         """
         Assign permissions based on action.
+        - create: customer permission
+        - partial_update: business permission
+        - destroy: admin permission
+
         Checks: authentication -> object existence -> ownership.
         """
         permission_classes = [IsAuthenticated]
@@ -46,8 +50,10 @@ class OrderViewSet(viewsets.ModelViewSet):
             permission_classes.append(IsAdminUser)
         return [perm() for perm in permission_classes]
 
-
     def get_serializer_class(self):
+        """
+        Return serializer based on action.
+        """
         if self.action == 'retrieve':
             return OrderSerializer
         if self.action == 'create':
@@ -67,19 +73,22 @@ class OrderViewSet(viewsets.ModelViewSet):
     )
     def create(self, request, *args, **kwargs):
         return super().create(request, *args, **kwargs)
-    
+
     def perform_create(self, serializer):
+        """
+        Save order with current user and offer detail.
+        """
         offer_detail_id = self.request.data.get('offer_detail_id')
         offer_detail = get_object_or_404(OfferDetail, pk=offer_detail_id)
-        serializer.save(customer_user=self.request.user, offer_detail=offer_detail)
+        serializer.save(customer_user=self.request.user,
+                        offer_detail=offer_detail)
 
     @extend_schema(exclude=True)
     def retrieve(self, request, *args, **kwargs):
         """
-        Disable GET /api/orders/{id}/
+        Disable GET detail endpoint.
         """
         raise MethodNotAllowed('GET')
-    
 
     @extend_schema(
         responses={
@@ -92,6 +101,17 @@ class OrderViewSet(viewsets.ModelViewSet):
     )
     def partial_update(self, request, *args, **kwargs):
         return super().partial_update(request, *args, **kwargs)
+
+    @extend_schema(
+        responses={
+            204: OpenApiResponse(description="Offer deleted successfully"),
+            401: OpenApiResponse(description="User is unauthorized"),
+            403: OpenApiResponse(description="User is not admin user"),
+            404: OpenApiResponse(description="Offer not Found"),
+        }
+    )
+    def destroy(self, request, *args, **kwargs):
+        return super().destroy(request, *args, **kwargs)
 
 
 class OrderCountView(generics.ListAPIView):
@@ -111,9 +131,14 @@ class OrderCountView(generics.ListAPIView):
         }
     )
     def get(self, request, business_user_id, *args, **kwargs):
-        user_profile = get_object_or_404(UserProfile, user_id=business_user_id, type='business')
+        """
+        Retrieve count of in-progress orders for user.
+        """
+        user_profile = get_object_or_404(
+            UserProfile, user_id=business_user_id, type='business')
         business_user = user_profile.user
-        order_count = Order.objects.filter(business_user=business_user, status='in_progress').count()
+        order_count = Order.objects.filter(
+            business_user=business_user, status='in_progress').count()
         return Response({'order_count': order_count})
 
 
@@ -134,7 +159,12 @@ class CompletedOrderCountView(generics.ListAPIView):
         }
     )
     def get(self, request, business_user_id, *args, **kwargs):
-        user_profile = get_object_or_404(UserProfile, user_id=business_user_id, type='business')
+        """
+        Retrieve count of completed orders for user.
+        """
+        user_profile = get_object_or_404(
+            UserProfile, user_id=business_user_id, type='business')
         business_user = user_profile.user
-        completed_order_count = Order.objects.filter(business_user=business_user, status='completed').count()
+        completed_order_count = Order.objects.filter(
+            business_user=business_user, status='completed').count()
         return Response({'completed_order_count': completed_order_count})
