@@ -96,8 +96,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
         business_user = serializer.validated_data['business_user']
         reviewer = self.request.user
         if Review.objects.filter(business_user=business_user, reviewer=reviewer).exists():
-            raise ValidationError(
-                "You have already reviewed this business user.")
+            raise ValidationError({"business_user": "You have already reviewed this business user."})
 
         serializer.save(reviewer=self.request.user)
 
@@ -122,7 +121,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
         """
         business_user = request.data.get('business_user')
         if business_user:
-            raise ValidationError("Cannot change business_user of a review.")
+            raise ValidationError({"detail": "Cannot change business_user of a review."})
 
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=request.data, partial=True)
