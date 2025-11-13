@@ -72,6 +72,22 @@ Follow these steps to set up and run the project locally.
           
     > **Note:** Don't forget to add the Guest user information to your frontend configuration so it can authenticate as the guest user.
 
+## 📚 API Documentation
+
+This project includes automatically generated API documentation with Swagger UI and Redoc.
+
+- The OpenAPI schema is available at:  
+  `/api/schema/`
+
+- Interactive Swagger UI can be accessed at:  
+  `/api/schema/swagger-ui/`  
+  Use this web interface to explore and test the API endpoints easily.
+
+- Alternative documentation with Redoc is available at:  
+  `/api/schema/redoc/`
+
+These endpoints are integrated using [drf-spectacular](https://github.com/tfranzel/drf-spectacular) and configured in the Django URL patterns for convenient API exploration during development and testing.
+
 ## 📁 Project Structure
 
 - [`core`](core) – Project configuration, global settings, and root URLs
