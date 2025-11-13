@@ -11,7 +11,7 @@ class OrderSerializer(serializers.ModelSerializer):
     Fields include users, order details, and status.
     'features' is a list of strings.
     """
-    features = serializers.ListField(child=serializers.CharField(), allow_empty=True)
+    features = serializers.ListField(child=serializers.CharField(), allow_empty=True, read_only=True)
     customer_user = serializers.PrimaryKeyRelatedField(read_only=True)
     business_user = serializers.PrimaryKeyRelatedField(read_only=True)
     status = serializers.ChoiceField(choices=Order.STATUS_CHOICES)
@@ -42,7 +42,7 @@ class OrderCreateUpdateSerializer(serializers.ModelSerializer):
     'features' is a list of strings.
     Other fields are read-only, sourced from related OfferDetail.
     """
-    features = serializers.ListField(child=serializers.CharField(), allow_empty=True)
+    features = serializers.ListField(child=serializers.CharField(), allow_empty=True, read_only=True)
     customer_user = serializers.PrimaryKeyRelatedField(read_only=True)
     business_user = serializers.PrimaryKeyRelatedField(read_only=True)
     offer_detail_id = serializers.IntegerField(write_only=True)
