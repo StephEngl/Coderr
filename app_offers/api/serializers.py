@@ -131,11 +131,12 @@ class OfferCreateUpdateSerializer(serializers.ModelSerializer):
             for detail_data in details_data:
                 offer_type = detail_data.get('offer_type')
                 if not offer_type:
-                    continue
+                    raise serializers.ValidationError("Each detail must have an 'offer_type' field.")
                 try:
                     detail_instance = instance.details.get(offer_type=offer_type)
                 except OfferDetail.DoesNotExist:
                     raise serializers.ValidationError(f"OfferDetail with offer_type '{offer_type}' does not exist.")
+                
                 for field, value in detail_data.items():
                     if field != 'offer_type':
                         setattr(detail_instance, field, value)
