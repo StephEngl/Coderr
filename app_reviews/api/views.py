@@ -124,7 +124,13 @@ class ReviewViewSet(viewsets.ModelViewSet):
         if business_user:
             raise ValidationError("Cannot change business_user of a review.")
 
-        return super().partial_update(request, *args, **kwargs)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        read_serializer = ReviewSerializer(instance, context={'request': request})
+        return Response(read_serializer.data)
 
     @extend_schema(
         responses={
