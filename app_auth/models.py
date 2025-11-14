@@ -2,6 +2,8 @@ from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
 
+from core.utils import overwrite_file_upload
+
 class UserProfile(models.Model):
     USER_TYPE_CHOICES = [
         ('customer', 'Customer'),
@@ -9,7 +11,7 @@ class UserProfile(models.Model):
     ]
 
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
-    file = models.FileField(upload_to='profile_pics/', null=True, blank=True)
+    file = models.FileField(upload_to=overwrite_file_upload, null=True, blank=True)
     file_uploaded_at = models.DateTimeField(null=True, blank=True)
     location = models.CharField(max_length=100, null=True, blank=True, default='')
     tel = models.CharField(max_length=20, null=True, blank=True, default='')
