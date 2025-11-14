@@ -2,11 +2,13 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator
 
+from core.utils import overwrite_file_upload
+
 
 class Offer(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=200)
-    image = models.FileField(upload_to='offer_images/', null=True, blank=True)
+    image = models.FileField(upload_to=overwrite_file_upload, null=True, blank=True)
     description = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
