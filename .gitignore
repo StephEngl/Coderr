@@ -2,12 +2,18 @@
 env/
 venv/
 
+# Environment variables
+.env
+
 # SQLite DB
 db.sqlite3
 
 # IDE/project infos
 infos.txt
 
-# __pycache__ und andere temporäre Dateien
+# __pycache__ and other temporary files
 __pycache__/
 *.pyc
+
+# Logs
+logs/
