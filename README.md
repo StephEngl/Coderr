@@ -69,7 +69,7 @@ Follow these steps to set up and run the project locally.
         - Username: `GuestCustomer`
         - Email: `customer.guest@coderr.de`
         - Password: `321Coderr987+`
-     - Go to "User profiles" and create one for each user.
+     - **Important:** Go to "User profiles" and create one for each user.
           
     > **Note:** Don't forget to add the Guest user information to your frontend configuration so it can authenticate as the guest user.
 
