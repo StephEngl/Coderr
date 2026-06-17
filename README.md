@@ -60,7 +60,7 @@ Follow these steps to set up and run the project locally.
     ```
 
 7. **If your frontend uses guest users, create one for business and customer user in the admin panel:**
-    - Go to [http://127.0.0.1:8000/admin/](http://127.0.0.1:8000/admin/)
+    - Go to [http://127.0.0.1:8000/admin/](http://127.0.0.1:8000/admin/).
     - Create a business user with:
         - Username: `GuestBusiness`
         - Email: `business.guest@coderr.de`
@@ -69,6 +69,7 @@ Follow these steps to set up and run the project locally.
         - Username: `GuestCustomer`
         - Email: `customer.guest@coderr.de`
         - Password: `321Coderr987+`
+     - Go to "User profiles" and create one for each user.
           
     > **Note:** Don't forget to add the Guest user information to your frontend configuration so it can authenticate as the guest user.
 
